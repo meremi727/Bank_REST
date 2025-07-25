@@ -1,0 +1,290 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_user_table
+      author: meremi727
+      preConditions:
+        - onFail: MARK_RUN
+        - tableExists:
+            tableName: users
+      changes:
+        - createTable:
+            remarks: Таблица для хранения информации о пользователях.
+            tableName: user
+            columns:
+              - column:
+                  remarks: Первичный ключ.
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: user_id_pk
+              - column:
+                  remarks: Логин.
+                  name: login
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: user_login_unique
+                    nullable: false
+                    notNullConstraintName: user_login_not_null
+              - column:
+                  remarks: Пароль в зашифрованном виде.
+                  name: password
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: user_password_not_null
+              - column:
+                  remarks: Электронная почта.
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: user_email_unique
+                    nullable: false
+                    notNullConstraintName: user_email_not_null
+              - column:
+                  remarks: Фамилия.
+                  name: first_name
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: user_first_name_not_null
+              - column:
+                  remarks: Имя.
+                  name: middle_name
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: user_middle_name_not_null
+              - column:
+                  remarks: Отчество
+                  name: last_name
+                  type: varchar(200)
+              - column:
+                  remarks: Флаг активности пользователя. Для отключения пользователей.
+                  name: is_enabled
+                  type: boolean
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: user_is_enabled_not_null
+                  defaultValue: "true"
+        - createIndex:
+            indexName: user_login_idx
+            tableName: user
+            unique: true
+            columns:
+              - column:
+                  name: login
+        - createIndex:
+            indexName: user_first_name_idx
+            tableName: user
+            unique: false
+            columns:
+              - column:
+                  name: first_name
+        - createIndex:
+            indexName: user_is_enabled_idx
+            tableName: user
+            unique: false
+            columns:
+              - column:
+                  name: is_enabled
+
+  - changeSet:
+      id: create_card_table
+      author: meremi727
+      preConditions:
+        - onFail: MARK_RUN
+        - tableExists:
+            tableName: card
+      changes:
+        - createTable:
+            remarks: Таблица для хранения данных о банковских картах.
+            tableName: card
+            columns:
+              - column:
+                  remarks: Первичный ключ.
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: card_id_pk
+              - column:
+                  remarks: Номер карты в зашифрованном виде.
+                  name: number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_number_not_null
+                    unique: true
+                    uniqueConstraintName: card_number_unique
+              - column:
+                  remarks: Статус карты.
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_status_not_null
+              - column:
+                  remarks: Баланс карты.
+                  name: balance
+                  type: decimal(19, 4)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_balance_not_null
+              - column:
+                  remarks: Срок действия карты.
+                  name: expiry_date
+                  type: date
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_expiry_date_not_null
+              - column:
+                  remarks: Внешний ключ на пользователя.
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_user_id_not_null
+                    references: user(id)
+                    foreignKeyName: card_user_fk
+        - createIndex:
+            indexName: card_expiry_date_idx
+            tableName: card
+            unique: false
+            columns:
+              - column:
+                  name: expiry_date
+        - createIndex:
+            indexName: card_user_id_idx
+            tableName: card
+            unique: false
+            columns:
+              - column:
+                  name: user_id
+
+  - changeSet:
+      id: create_card_transaction_table
+      author: meremi727
+      preConditions:
+        - onFail: MARK_RUN
+        - tableExists:
+            tableName: card_transaction
+      changes:
+        - createTable:
+            remarks: Таблица для хранения информации о транзакциях.
+            tableName: card_transaction
+            columns:
+              - column:
+                  remarks: Первичный ключ.
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: card_transaction_id_pk
+              - column:
+                  remarks: Дата и время создания транзакции.
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_transaction_created_at_not_null
+              - column:
+                  remarks: Дата и время обновления транзакции.
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_transaction_updated_at_not_null
+              - column:
+                  remarks: Статус транзакции.
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_transaction_status_not_null
+              - column:
+                  remarks: Расширенное описание статуса.
+                  name: extended_status
+                  type: varchar(1024)
+              - column:
+                  remarks: Сумма.
+                  name: amount
+                  type: decimal(19, 4)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_transaction_amount_not_null
+              - column:
+                  remarks: Номер карты, с которой происходит списание.
+                  name: source_card_number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_transaction_source_card_number_not_null
+              - column:
+                  remarks: Номер карты, на которую происходит зачисление.
+                  name: destination_card_number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_transaction_destination_card_number_not_null
+        - createIndex:
+            indexName: card_transaction_source_card_number_idx
+            tableName: card_transaction
+            unique: false
+            columns:
+              - column:
+                  name: source_card_number
+        - createIndex:
+            indexName: card_transaction_destination_card_number_idx
+            tableName: card_transaction
+            unique: false
+            columns:
+              - column:
+                  name: destination_card_number
+        - createIndex:
+            indexName: card_transaction_destination_status_idx
+            tableName: card_transaction
+            unique: false
+            columns:
+              - column:
+                  name: status
+
+  - changeSet:
+      id: create_card_block_request_table
+      author: meremi727
+      preConditions:
+        - onFail: MARK_RUN
+        - tableExists:
+            tableName: card_block_request
+        - createTable:
+            remarks: Таблица для запросов на блокировку карты.
+            tableName: card_block_request
+            columns:
+              - column:
+                  remarks: Первичный ключ.
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: card_block_request_id_pk
+              - column:
+                  remarks: Номер карты.
+                  name: card_number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_block_request_card_number_not_null
+              - column:
+                  remarks: Статус обращения.
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: card_block_request_status_not_null
+              - column:
+                  remarks: Расширенная информация о статусе обращения.
+                  name: extended_status
+                  type: varchar(1024)
+        - createIndex:
