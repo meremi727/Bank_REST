@@ -3,9 +3,10 @@ databaseChangeLog:
       id: create_user_table
       author: meremi727
       preConditions:
-        - onFail: MARK_RUN
-        - tableExists:
-            tableName: users
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: user
       changes:
         - createTable:
             remarks: Таблица для хранения информации о пользователях.
@@ -69,6 +70,13 @@ databaseChangeLog:
                     nullable: false
                     notNullConstraintName: user_is_enabled_not_null
                   defaultValue: "true"
+              - column:
+                  remarks: Роль.
+                  name: role
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    notNullConstraintName: user_role_not_null
         - createIndex:
             indexName: user_login_idx
             tableName: user
@@ -95,9 +103,10 @@ databaseChangeLog:
       id: create_card_table
       author: meremi727
       preConditions:
-        - onFail: MARK_RUN
-        - tableExists:
-            tableName: card
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: card
       changes:
         - createTable:
             remarks: Таблица для хранения данных о банковских картах.
@@ -168,9 +177,10 @@ databaseChangeLog:
       id: create_card_transaction_table
       author: meremi727
       preConditions:
-        - onFail: MARK_RUN
-        - tableExists:
-            tableName: card_transaction
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: card_transaction
       changes:
         - createTable:
             remarks: Таблица для хранения информации о транзакциях.
@@ -255,9 +265,11 @@ databaseChangeLog:
       id: create_card_block_request_table
       author: meremi727
       preConditions:
-        - onFail: MARK_RUN
-        - tableExists:
-            tableName: card_block_request
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: card_block_request
+      changes:
         - createTable:
             remarks: Таблица для запросов на блокировку карты.
             tableName: card_block_request
@@ -287,4 +299,3 @@ databaseChangeLog:
                   remarks: Расширенная информация о статусе обращения.
                   name: extended_status
                   type: varchar(1024)
-        - createIndex:
